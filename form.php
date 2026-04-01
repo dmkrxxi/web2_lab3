@@ -40,10 +40,10 @@ label {
 <h2>Анкета</h2>
 
 <label>ФИО:</label>
-<input name="fio" required maxlength="150" />
+<input name="fio" type="text" required maxlength="150" />
 
 <label>Телефон:</label>
-<input name="phone" required />
+<input name="phone" type="tel" required />
 
 <label>Email:</label>
 <input type="email" name="email" required />
