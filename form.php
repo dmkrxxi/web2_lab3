@@ -18,11 +18,13 @@ form {
 input[type="text"],
 input[type="email"],
 input[type="date"],
+input[type="tel"],
 textarea,
 select {
   width: 100%;
   margin-bottom: 10px;
   padding: 8px;
+  box-sizing: border-box;
 }
 
 input[type="radio"],
