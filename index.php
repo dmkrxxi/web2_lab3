@@ -10,7 +10,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 }
 
 // ===== ВАЛИДАЦИЯ =====
-
 $errors = FALSE;
 
 if (empty($_POST['fio']) || !preg_match('/^[a-zA-Zа-яА-Я\s]{1,150}$/u', $_POST['fio'])) {
@@ -38,13 +37,13 @@ if (empty($_POST['gender']) || !in_array($_POST['gender'], ['male', 'female'])) 
   $errors = TRUE;
 }
 
-if (empty($_POST['abilities'])) {
+if (empty($_POST['abilities']) || !is_array($_POST['abilities'])) {
   print('Выберите хотя бы один язык программирования.<br/>');
   $errors = TRUE;
 }
 
-if (empty($_POST['bio'])) {
-  print('Введите биографию.<br/>');
+if (empty($_POST['bio']) || strlen($_POST['bio']) < 10) {
+  print('Биография должна быть не короче 10 символов.<br/>');
   $errors = TRUE;
 }
 
