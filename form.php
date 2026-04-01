@@ -15,10 +15,20 @@ form {
   box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
-input, textarea, select {
+input[type="text"],
+input[type="email"],
+input[type="date"],
+textarea,
+select {
   width: 100%;
   margin-bottom: 10px;
   padding: 8px;
+}
+
+input[type="radio"],
+input[type="checkbox"] {
+  width: auto;
+  margin-right: 5px;
 }
 
 label {
