@@ -1,80 +1,109 @@
 <?php
-// Отправляем браузеру правильную кодировку,
-// файл index.php должен быть в кодировке UTF-8 без BOM.
 header('Content-Type: text/html; charset=UTF-8');
 
-// В суперглобальном массиве $_SERVER PHP сохраняет некторые заголовки запроса HTTP
-// и другие сведения о клиненте и сервере, например метод текущего запроса $_SERVER['REQUEST_METHOD'].
 if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-  // В суперглобальном массиве $_GET PHP хранит все параметры, переданные в текущем запросе через URL.
   if (!empty($_GET['save'])) {
-    // Если есть параметр save, то выводим сообщение пользователю.
     print('Спасибо, результаты сохранены.');
   }
-  // Включаем содержимое файла form.php.
   include('form.php');
-  // Завершаем работу скрипта.
   exit();
 }
-// Иначе, если запрос был методом POST, т.е. нужно проверить данные и сохранить их в БД.
 
-// Проверяем ошибки.
+// ===== ВАЛИДАЦИЯ =====
+
 $errors = FALSE;
-if (empty($_POST['fio'])) {
-  print('Заполните имя.<br/>');
+
+if (empty($_POST['fio']) || !preg_match('/^[a-zA-Zа-яА-Я\s]{1,150}$/u', $_POST['fio'])) {
+  print('Некорректное ФИО.<br/>');
   $errors = TRUE;
 }
 
-if (empty($_POST['year']) || !is_numeric($_POST['year']) || !preg_match('/^\d+$/', $_POST['year'])) {
-  print('Заполните год.<br/>');
+if (empty($_POST['phone']) || !preg_match('/^\+?[0-9\s\-\(\)]+$/', $_POST['phone'])) {
+  print('Некорректный телефон.<br/>');
   $errors = TRUE;
 }
 
+if (empty($_POST['email']) || !filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
+  print('Некорректный email.<br/>');
+  $errors = TRUE;
+}
 
-// *************
-// Тут необходимо проверить правильность заполнения всех остальных полей.
-// *************
+if (empty($_POST['birthdate'])) {
+  print('Введите дату рождения.<br/>');
+  $errors = TRUE;
+}
+
+if (empty($_POST['gender']) || !in_array($_POST['gender'], ['male', 'female'])) {
+  print('Выберите пол.<br/>');
+  $errors = TRUE;
+}
+
+if (empty($_POST['abilities'])) {
+  print('Выберите хотя бы один язык программирования.<br/>');
+  $errors = TRUE;
+}
+
+if (empty($_POST['bio'])) {
+  print('Введите биографию.<br/>');
+  $errors = TRUE;
+}
+
+if (empty($_POST['contract'])) {
+  print('Необходимо согласие с контрактом.<br/>');
+  $errors = TRUE;
+}
 
 if ($errors) {
-  // При наличии ошибок завершаем работу скрипта.
   exit();
 }
 
-// Сохранение в базу данных.
+// ===== ПОДКЛЮЧЕНИЕ К БД =====
 
-$user = 'db'; // Заменить на ваш логин uXXXXX
-$pass = '123'; // Заменить на пароль
-$db = new PDO('mysql:host=localhost;dbname=test', $user, $pass,
-  [PDO::ATTR_PERSISTENT => true, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]); // Заменить test на имя БД, совпадает с логином uXXXXX
+$user = 'u82350';
+$pass = '9510179';
+$dbname = 'u82350';
 
-// Подготовленный запрос. Не именованные метки.
+$db = new PDO("mysql:host=localhost;dbname=$dbname", $user, $pass,
+  [PDO::ATTR_PERSISTENT => true, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
+
+// ===== СОХРАНЕНИЕ =====
+
 try {
-  $stmt = $db->prepare("INSERT INTO application SET name = ?");
-  $stmt->execute([$_POST['fio']]);
+  // основная таблица
+  $stmt = $db->prepare("
+    INSERT INTO application 
+    (name, phone, email, birthdate, gender, bio, contract)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  ");
+
+  $stmt->execute([
+    $_POST['fio'],
+    $_POST['phone'],
+    $_POST['email'],
+    $_POST['birthdate'],
+    $_POST['gender'],
+    $_POST['bio'],
+    isset($_POST['contract'])
+  ]);
+
+  // получаем ID
+  $app_id = $db->lastInsertId();
+
+  // вставка языков
+  $stmt = $db->prepare("
+    INSERT INTO application_language (application_id, language_id)
+    VALUES (?, ?)
+  ");
+
+  foreach ($_POST['abilities'] as $ability) {
+    $stmt->execute([$app_id, $ability]);
+  }
+
 }
 catch(PDOException $e){
   print('Error : ' . $e->getMessage());
   exit();
 }
 
-//  stmt - это "дескриптор состояния".
- 
-//  Именованные метки.
-//$stmt = $db->prepare("INSERT INTO test (label,color) VALUES (:label,:color)");
-//$stmt -> execute(['label'=>'perfect', 'color'=>'green']);
- 
-//Еще вариант
-/*$stmt = $db->prepare("INSERT INTO users (firstname, lastname, email) VALUES (:firstname, :lastname, :email)");
-$stmt->bindParam(':firstname', $firstname);
-$stmt->bindParam(':lastname', $lastname);
-$stmt->bindParam(':email', $email);
-$firstname = "John";
-$lastname = "Smith";
-$email = "john@test.com";
-$stmt->execute();
-*/
-
-// Делаем перенаправление.
-// Если запись не сохраняется, но ошибок не видно, то можно закомментировать эту строку чтобы увидеть ошибку.
-// Если ошибок при этом не видно, то необходимо настроить параметр display_errors для PHP.
+// редирект
 header('Location: ?save=1');
