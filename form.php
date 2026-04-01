@@ -1,44 +1,76 @@
 <form action="" method="POST">
 
-  ФИО:<br>
-  <input name="fio" /><br>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f5f5f5;
+}
 
-  Телефон:<br>
-  <input name="phone" /><br>
+form {
+  background: white;
+  padding: 20px;
+  max-width: 600px;
+  margin: 40px auto;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
 
-  Email:<br>
-  <input name="email" /><br>
+input, textarea, select {
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 8px;
+}
 
-  Дата рождения:<br>
-  <input type="date" name="birthdate" /><br>
+label {
+  display: block;
+  margin-bottom: 5px;
+}
+</style>
 
-  Пол:<br>
-  <label><input type="radio" name="gender" value="male"> Мужской</label>
-  <label><input type="radio" name="gender" value="female"> Женский</label><br>
+<h2>Анкета</h2>
 
-  Любимые языки программирования:<br>
-  <select name="abilities[]" multiple="multiple">
-    <option value="1">Pascal</option>
-    <option value="2">C</option>
-    <option value="3">C++</option>
-    <option value="4">JavaScript</option>
-    <option value="5">PHP</option>
-    <option value="6">Python</option>
-    <option value="7">Java</option>
-    <option value="8">Haskel</option>
-    <option value="9">Clojure</option>
-    <option value="10">Prolog</option>
-    <option value="11">Scala</option>
-    <option value="12">Go</option>
-  </select><br>
+<label>ФИО:</label>
+<input name="fio" required maxlength="150" />
 
-  Биография:<br>
-  <textarea name="bio"></textarea><br>
+<label>Телефон:</label>
+<input name="phone" required />
 
-  <label>
-    <input type="checkbox" name="contract">
-    С контрактом ознакомлен(а)
-  </label><br><br>
+<label>Email:</label>
+<input type="email" name="email" required />
 
-  <input type="submit" value="Сохранить">
+<label>Дата рождения:</label>
+<input type="date" name="birthdate" required />
+
+<label>Пол:</label>
+<label><input type="radio" name="gender" value="male" required> Мужской</label>
+<label><input type="radio" name="gender" value="female"> Женский</label>
+
+<label>Любимые языки программирования:</label>
+<p style="font-size: 12px;">Удерживайте Ctrl (или Cmd), чтобы выбрать несколько</p>
+
+<select name="abilities[]" multiple="multiple" size="6" required>
+  <option value="1">Pascal</option>
+  <option value="2">C</option>
+  <option value="3">C++</option>
+  <option value="4">JavaScript</option>
+  <option value="5">PHP</option>
+  <option value="6">Python</option>
+  <option value="7">Java</option>
+  <option value="8">Haskel</option>
+  <option value="9">Clojure</option>
+  <option value="10">Prolog</option>
+  <option value="11">Scala</option>
+  <option value="12">Go</option>
+</select>
+
+<label>Биография:</label>
+<textarea name="bio" required></textarea>
+
+<label>
+  <input type="checkbox" name="contract" required>
+  С контрактом ознакомлен(а)
+</label>
+
+<input type="submit" value="Сохранить">
+
 </form>
